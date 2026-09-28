@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>صناعة القادة</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f7fb;
+        color: #10172a;
+        font-family: -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+        padding: 24px;
+      }
+      .card {
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 32px 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      }
+      .mark {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        border-radius: 16px;
+        background: #004eab;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        font-weight: 800;
+      }
+      h1 { font-size: 19px; margin: 0 0 8px; }
+      p { font-size: 14px; color: #64748b; margin: 0 0 20px; line-height: 1.7; }
+      button {
+        width: 100%;
+        border: 0;
+        border-radius: 12px;
+        background: #004eab;
+        color: #fff;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 13px;
+        cursor: pointer;
+      }
+      button:active { opacity: 0.85; }
+      .hint { margin-top: 14px; font-size: 12px; color: #94a3b8; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="mark">ق</div>
+      <h1>تعذّر الاتصال مؤقتًا</h1>
+      <p>يبدو أن الاتصال بالإنترنت انقطع للحظة. تحقّق من الشبكة ثم أعد المحاولة.</p>
+      <button onclick="location.reload()">إعادة المحاولة</button>
+      <div class="hint">سيُعاد التحميل تلقائيًا عند عودة الاتصال.</div>
+    </div>
+    <script>
+      // Auto-reload as soon as the device is back online.
+      window.addEventListener("online", function () {
+        location.reload();
+      });
+      // Also retry periodically in case the "online" event is missed.
+      setInterval(function () {
+        if (navigator.onLine) location.reload();
+      }, 5000);
+    </script>
+  </body>
+</html>

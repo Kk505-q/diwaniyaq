@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  PENDING
+  STUDENT
+  SUPERVISOR
+  ADMIN
+}
+
+enum Frequency {
+  DAILY
+  WEEKLY
+}
+
+enum CompletionStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum NotificationTarget {
+  ALL
+  STUDENT
+  SUPERVISOR
+  USER
+}
+
+enum SubscriptionStatus {
+  UNPAID
+  HALF
+  PAID
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(PENDING)
+  points       Int      @default(0)
+  subscription SubscriptionStatus @default(UNPAID)
+  alias        String?
+  aliasDisabled Boolean @default(false)
+  canEditAlias  Boolean @default(false)
+  canEditName   Boolean @default(false)
+  failedLogins Int      @default(0)
+  lockedUntil  DateTime?
+  createdAt    DateTime @default(now())
+
+  avatar Avatar?
+
+  createdTasks        HabitTask[]        @relation("TaskCreator")
+  completions         TaskCompletion[]   @relation("StudentCompletions")
+  reviewedCompletions TaskCompletion[]   @relation("CompletionReviewer")
+  pointsLogsFor       PointsLog[]        @relation("PointsLogStudent")
+  pointsLogsBy        PointsLog[]        @relation("PointsLogAuthor")
+  notificationsSent   Notification[]     @relation("NotificationAuthor")
+  notificationReads   NotificationRead[]
+
+  resetTokens  PasswordResetToken[]
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  chatMessages     ChatMessage[] @relation("ChatMessages")
+}
+
+model Settings {
+  id                  String  @id @default("singleton")
+  allowAllEditAlias   Boolean @default(false)
+  allowAllEditName    Boolean @default(false)
+  chatOpen            Boolean @default(true)
+  motivationEmailDate String?
+  reminderEmailDate   String?
+}
+
+model ChatMessage {
+  id        String    @id @default(cuid())
+  authorId  String
+  body      String
+  replyToId String?
+  editedAt  DateTime?
+  createdAt DateTime  @default(now())
+
+  author  User         @relation("ChatMessages", fields: [authorId], references: [id], onDelete: Cascade)
+  replyTo ChatMessage? @relation("ChatReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies ChatMessage[] @relation("ChatReplies")
+
+  @@index([createdAt])
+}
+
+model Avatar {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  mimeType  String
+  data      Bytes
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  senderId    String
+  recipientId String
+  body        String
+  createdAt   DateTime  @default(now())
+  readAt      DateTime?
+
+  sender    User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, createdAt])
+  @@index([senderId, createdAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model HabitTask {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  points        Int       @default(10)
+  frequency     Frequency @default(DAILY)
+  requiresProof Boolean   @default(false)
+  active        Boolean   @default(true)
+  createdById   String
+  createdAt     DateTime  @default(now())
+
+  createdBy   User             @relation("TaskCreator", fields: [createdById], references: [id])
+  completions TaskCompletion[]
+}
+
+model TaskCompletion {
+  id            String            @id @default(cuid())
+  taskId        String
+  studentId     String
+  periodKey     String
+  status          CompletionStatus  @default(APPROVED)
+  submittedAt     DateTime          @default(now())
+  reviewedById    String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+
+  task       HabitTask  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  student    User       @relation("StudentCompletions", fields: [studentId], references: [id], onDelete: Cascade)
+  reviewedBy User?      @relation("CompletionReviewer", fields: [reviewedById], references: [id])
+  proofFiles ProofFile[]
+
+  @@unique([taskId, studentId, periodKey])
+}
+
+model ProofFile {
+  id           String   @id @default(cuid())
+  completionId String
+  mimeType     String
+  data         Bytes
+  createdAt    DateTime @default(now())
+
+  completion TaskCompletion @relation(fields: [completionId], references: [id], onDelete: Cascade)
+
+  @@index([completionId])
+}
+
+model PointsLog {
+  id          String   @id @default(cuid())
+  studentId   String
+  delta       Int
+  reason      String
+  createdById String
+  createdAt   DateTime @default(now())
+  effectiveAt DateTime @default(now())
+  applied     Boolean  @default(true)
+
+  student   User @relation("PointsLogStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  createdBy User @relation("PointsLogAuthor", fields: [createdById], references: [id])
+
+  @@index([applied, effectiveAt])
+}
+
+model Notification {
+  id           String              @id @default(cuid())
+  title        String
+  body         String
+  targetRole   NotificationTarget  @default(ALL)
+  targetUserId String?
+  createdById  String
+  createdAt    DateTime            @default(now())
+
+  createdBy User                @relation("NotificationAuthor", fields: [createdById], references: [id])
+  reads     NotificationRead[]
+}
+
+model NotificationRead {
+  id             String   @id @default(cuid())
+  notificationId String
+  userId         String
+  readAt         DateTime @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+}
