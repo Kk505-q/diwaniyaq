@@ -5,6 +5,7 @@ import { DeleteUserButton } from "@/components/admin/DeleteUserButton";
 import { RejectRequestButton } from "@/components/admin/RejectRequestButton";
 import { SubscriptionSelect } from "@/components/SubscriptionSelect";
 import { StudentNameManager } from "@/components/admin/StudentNameManager";
+import { StudentTrackingTable } from "@/components/StudentTrackingTable";
 import { ROLE_LABELS } from "@/lib/roles";
 
 export default async function AdminPage() {
@@ -40,6 +41,11 @@ export default async function AdminPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-bold">متابعة الطلاب والنقاط</h2>
+        <StudentTrackingTable />
       </section>
 
       <section className="space-y-4">
