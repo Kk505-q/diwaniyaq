@@ -13,8 +13,8 @@ export async function signupAction(_prevState: ActionState, formData: FormData):
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
 
-  if (!name || !email || !password) {
-    return { error: "الرجاء تعبئة الاسم والبريد وكلمة المرور" };
+  if (!name || !alias || !email || !password) {
+    return { error: "الرجاء تعبئة الاسم والاسم المستعار والبريد وكلمة المرور" };
   }
   if (!email.includes("@")) {
     return { error: "الرجاء إدخال بريد إلكتروني صحيح" };
@@ -30,7 +30,7 @@ export async function signupAction(_prevState: ActionState, formData: FormData):
 
   const passwordHash = await hashPassword(password);
   const user = await prisma.user.create({
-    data: { name, alias: alias || null, email, passwordHash, role: "PENDING" },
+    data: { name, alias, email, passwordHash, role: "PENDING" },
   });
 
   const token = await createSessionToken({ sub: user.id, role: user.role });

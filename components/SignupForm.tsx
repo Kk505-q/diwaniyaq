@@ -39,17 +39,16 @@ export function SignupForm() {
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-foreground/70">
-          الاسم المستعار <span className="text-foreground/40">(اختياري)</span>
-        </label>
+        <label className="mb-1 block text-sm font-medium text-foreground/70">الاسم المستعار</label>
         <input
           type="text"
           name="alias"
+          required
           className="w-full rounded-xl border border-border bg-white px-4 py-3 focus:border-brand focus:outline-none"
-          placeholder="الاسم الذي يظهر في لوحة الترتيب"
+          placeholder="الاسم الذي يظهر للآخرين"
         />
         <p className="mt-1 text-xs text-foreground/50">
-          يظهر في لوحة الترتيب العامة بدل اسمك الحقيقي. إن تركته فارغًا سيظهر اسمك الحقيقي.
+          إلزامي. هو الاسم الذي يظهر في لوحة الترتيب وفي الرسائل بدل اسمك الحقيقي.
         </p>
       </div>
       <div>
