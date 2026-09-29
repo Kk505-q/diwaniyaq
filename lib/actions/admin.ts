@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import type { ActionState } from "@/lib/actions/auth";
 import type { Role } from "@prisma/client";
 
-const ASSIGNABLE_ROLES: Role[] = ["STUDENT", "SUPERVISOR", "ADMIN"];
+const ASSIGNABLE_ROLES: Role[] = ["STUDENT", "PARENT", "SUPERVISOR", "ADMIN"];
 
 export async function assignRoleAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireRole("ADMIN");
@@ -17,7 +17,8 @@ export async function assignRoleAction(_prevState: ActionState, formData: FormDa
     return { error: "بيانات غير صالحة" };
   }
 
-  // Set the role only.
+  // Set the role only. Linking a parent to specific students is done
+  // explicitly from the "ربط أولياء الأمور بالطلاب" section.
   await prisma.user.update({ where: { id: userId }, data: { role } });
 
   revalidatePath("/admin");
@@ -36,6 +37,26 @@ export async function rejectPendingUserAction(userId: string): Promise<{ error?:
   await prisma.user.delete({ where: { id: userId } });
   revalidatePath("/admin");
   return {};
+}
+
+export async function linkParentChildAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireRole("ADMIN");
+  const parentId = String(formData.get("parentId") || "");
+  const studentId = String(formData.get("studentId") || "");
+
+  if (!parentId || !studentId) {
+    return { error: "الرجاء اختيار ولي الأمر والطالب" };
+  }
+
+  await prisma.parentChild.create({ data: { parentId, studentId } }).catch(() => {});
+  revalidatePath("/admin");
+  return {};
+}
+
+export async function unlinkParentChildAction(linkId: string) {
+  await requireRole("ADMIN");
+  await prisma.parentChild.delete({ where: { id: linkId } }).catch(() => {});
+  revalidatePath("/admin");
 }
 
 export async function deleteUserAction(userId: string): Promise<{ error?: string }> {

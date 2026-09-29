@@ -11,6 +11,7 @@ datasource db {
 enum Role {
   PENDING
   STUDENT
+  PARENT
   SUPERVISOR
   ADMIN
 }
@@ -29,6 +30,7 @@ enum CompletionStatus {
 enum NotificationTarget {
   ALL
   STUDENT
+  PARENT
   SUPERVISOR
   USER
 }
@@ -65,6 +67,8 @@ model User {
   notificationsSent   Notification[]     @relation("NotificationAuthor")
   notificationReads   NotificationRead[]
 
+  parentLinks  ParentChild[] @relation("ParentLinks")
+  studentLinks ParentChild[] @relation("StudentLinks")
   resetTokens  PasswordResetToken[]
 
   sentMessages     Message[] @relation("SentMessages")
@@ -130,6 +134,17 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ParentChild {
+  id        String @id @default(cuid())
+  parentId  String
+  studentId String
+
+  parent  User @relation("ParentLinks", fields: [parentId], references: [id], onDelete: Cascade)
+  student User @relation("StudentLinks", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, studentId])
 }
 
 model HabitTask {

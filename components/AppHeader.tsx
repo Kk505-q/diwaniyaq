@@ -35,7 +35,7 @@ export function AppHeader({
           items={items}
           messagesHref={`${base}/messages`}
           accountHref={`${base}/account`}
-          chatHref={`${base}/chat`}
+          chatHref={role === "PARENT" ? undefined : `${base}/chat`}
           unread={unreadMessages}
         />
         <Logo size={40} />

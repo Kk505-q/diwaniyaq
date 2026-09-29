@@ -3,7 +3,8 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 
 // Serves a proof file stored in the database. `id` is the ProofFile id.
-// Access: the student who owns it, or any supervisor/admin.
+// Access: the student who owns it, any supervisor/admin, or a parent linked to
+// that student.
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) return new NextResponse("Unauthorized", { status: 401 });
@@ -21,6 +22,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     allowed = true;
   } else if (user.role === "STUDENT" && user.id === studentId) {
     allowed = true;
+  } else if (user.role === "PARENT") {
+    const link = await prisma.parentChild.findFirst({
+      where: { parentId: user.id, studentId },
+    });
+    allowed = !!link;
   }
   if (!allowed) return new NextResponse("Forbidden", { status: 403 });
 

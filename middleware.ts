@@ -10,9 +10,10 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "insecure-dev-
 
 const PROTECTED_PREFIXES: { prefix: string; roles: string[] }[] = [
   { prefix: "/student", roles: ["STUDENT"] },
+  { prefix: "/parent", roles: ["PARENT"] },
   { prefix: "/supervisor", roles: ["SUPERVISOR"] },
   { prefix: "/admin", roles: ["ADMIN"] },
-  { prefix: "/pending", roles: ["PENDING", "STUDENT", "SUPERVISOR", "ADMIN"] },
+  { prefix: "/pending", roles: ["PENDING", "STUDENT", "PARENT", "SUPERVISOR", "ADMIN"] },
 ];
 
 export async function middleware(req: NextRequest) {
@@ -39,5 +40,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/student/:path*", "/supervisor/:path*", "/admin/:path*", "/pending"],
+  matcher: ["/student/:path*", "/parent/:path*", "/supervisor/:path*", "/admin/:path*", "/pending"],
 };

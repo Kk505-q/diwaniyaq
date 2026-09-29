@@ -13,8 +13,8 @@ export default async function PendingPage() {
     <AuthShell title="طلبك قيد المراجعة" subtitle={`مرحبًا ${user.name}`}>
       <div className="space-y-4 text-center">
         <p className="text-sm leading-relaxed text-foreground/70">
-          تم استلام طلب تسجيلك بنجاح. سيقوم فريق الإدارة بمراجعة طلبك واعتماد حسابك
-          قريبًا. يمكنك المحاولة لاحقًا بتسجيل الدخول من جديد للتحقق من حالة حسابك.
+          تم استلام طلب تسجيلك بنجاح. سيقوم فريق الإدارة بمراجعة طلبك وتحديد نوع حسابك
+          (طالب / ولي أمر) قريبًا. يمكنك المحاولة لاحقًا بتسجيل الدخول من جديد للتحقق من حالة حسابك.
         </p>
         <LogoutButton />
       </div>

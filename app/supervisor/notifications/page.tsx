@@ -6,6 +6,7 @@ import { formatArabicDateTime } from "@/lib/dates";
 const TARGET_LABEL: Record<string, string> = {
   ALL: "الجميع",
   STUDENT: "الطلاب",
+  PARENT: "أولياء الأمور",
   SUPERVISOR: "المشرفون",
   USER: "طالب محدد",
 };

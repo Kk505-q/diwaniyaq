@@ -117,6 +117,8 @@ export async function reviewCompletionAction(completionId: string, approve: bool
   revalidatePath("/student/tasks");
   revalidatePath("/student/completed");
   revalidatePath("/student/leaderboard");
+  revalidatePath("/parent/rank");
+  revalidatePath("/parent/tasks");
 }
 
 export async function adjustPointsAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
@@ -152,6 +154,7 @@ export async function adjustPointsAction(_prevState: ActionState, formData: Form
 
   revalidatePath("/supervisor/progress");
   revalidatePath("/student/leaderboard");
+  revalidatePath("/parent/rank");
   return {};
 }
 

@@ -47,6 +47,7 @@ export function SendNotificationForm({ students }: { students: { id: string; nam
       >
         <option value="ALL">الجميع</option>
         <option value="STUDENT">الطلاب</option>
+        <option value="PARENT">أولياء الأمور</option>
         <option value="USER">طالب محدد</option>
       </select>
       {targetType === "USER" && (

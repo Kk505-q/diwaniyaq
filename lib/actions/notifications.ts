@@ -7,7 +7,7 @@ import type { Role, NotificationTarget } from "@prisma/client";
 import type { ActionState } from "@/lib/actions/auth";
 
 function roleToNotificationTarget(role: Role): NotificationTarget | null {
-  if (role === "STUDENT" || role === "SUPERVISOR") return role;
+  if (role === "STUDENT" || role === "PARENT" || role === "SUPERVISOR") return role;
   return null;
 }
 

@@ -11,8 +11,9 @@ export const ALL_STUDENTS = "__ALL_STUDENTS__";
 
 // The contacts a user is allowed to start a new conversation with.
 // - Student  → all supervisors + all other students (shown by alias)
+// - Parent   → their own children + all supervisors
 // - Supervisor → all students
-// - Admin    → any student/supervisor
+// - Admin    → any student/parent/supervisor
 export async function allowedRecipients(userId: string, role: Role): Promise<Recipient[]> {
   if (role === "STUDENT") {
     const sups = await prisma.user.findMany({ where: { role: "SUPERVISOR" }, orderBy: { name: "asc" } });
@@ -28,6 +29,17 @@ export async function allowedRecipients(userId: string, role: Role): Promise<Rec
     ];
   }
 
+  if (role === "PARENT") {
+    const links = await prisma.parentChild.findMany({
+      where: { parentId: userId },
+      include: { student: true },
+      orderBy: { student: { name: "asc" } },
+    });
+    const children = links.map((l) => ({ id: l.student.id, name: l.student.name, roleLabel: ROLE_LABELS.STUDENT }));
+    const sups = await prisma.user.findMany({ where: { role: "SUPERVISOR" }, orderBy: { name: "asc" } });
+    return [...children, ...sups.map((s) => ({ id: s.id, name: s.name, roleLabel: ROLE_LABELS.SUPERVISOR }))];
+  }
+
   if (role === "SUPERVISOR") {
     const students = await prisma.user.findMany({ where: { role: "STUDENT" }, orderBy: { name: "asc" } });
     return [
@@ -38,7 +50,7 @@ export async function allowedRecipients(userId: string, role: Role): Promise<Rec
 
   if (role === "ADMIN") {
     const users = await prisma.user.findMany({
-      where: { role: { in: ["STUDENT", "SUPERVISOR"] } },
+      where: { role: { in: ["STUDENT", "PARENT", "SUPERVISOR"] } },
       orderBy: { name: "asc" },
     });
     return [

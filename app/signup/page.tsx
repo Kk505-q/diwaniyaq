@@ -9,7 +9,7 @@ export default async function SignupPage() {
   if (user) redirect(ROLE_HOME[user.role] ?? "/login");
 
   return (
-    <AuthShell title="إنشاء حساب جديد" subtitle="للطلاب">
+    <AuthShell title="إنشاء حساب جديد" subtitle="للطلاب وأولياء الأمور">
       <SignupForm />
     </AuthShell>
   );

@@ -1,6 +1,8 @@
 import { requireRole } from "@/lib/guard";
 import { prisma } from "@/lib/db";
 import { AssignRoleForm } from "@/components/admin/AssignRoleForm";
+import { LinkParentForm } from "@/components/admin/LinkParentForm";
+import { UnlinkButton } from "@/components/admin/UnlinkButton";
 import { DeleteUserButton } from "@/components/admin/DeleteUserButton";
 import { RejectRequestButton } from "@/components/admin/RejectRequestButton";
 import { SubscriptionSelect } from "@/components/SubscriptionSelect";
@@ -11,14 +13,17 @@ import { ROLE_LABELS } from "@/lib/roles";
 export default async function AdminPage() {
   await requireRole("ADMIN");
 
-  const [pendingUsers, allUsersRaw] = await Promise.all([
+  const [pendingUsers, allUsersRaw, links] = await Promise.all([
     prisma.user.findMany({ where: { role: "PENDING" }, orderBy: { createdAt: "asc" } }),
     prisma.user.findMany({ where: { role: { not: "PENDING" } } }),
+    prisma.parentChild.findMany({ include: { parent: true, student: true }, orderBy: { id: "asc" } }),
   ]);
 
   // Alphabetical (Arabic) ordering for all listings.
   const allUsers = allUsersRaw.sort((a, b) => a.name.localeCompare(b.name, "ar"));
   const students = allUsers.filter((u) => u.role === "STUDENT");
+  const parents = allUsers.filter((u) => u.role === "PARENT");
+  const studentOptions = students.map((s) => ({ id: s.id, name: s.name }));
 
   return (
     <div className="space-y-10">
@@ -46,6 +51,28 @@ export default async function AdminPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-bold">متابعة الطلاب والنقاط</h2>
         <StudentTrackingTable />
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-bold">ربط أولياء الأمور بالطلاب</h2>
+        <LinkParentForm
+          parents={parents.map((p) => ({ id: p.id, name: p.name }))}
+          students={studentOptions}
+        />
+        <div className="space-y-2">
+          {links.map((l) => (
+            <div
+              key={l.id}
+              className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-2 text-sm"
+            >
+              <span>
+                {l.parent.name} ← {l.student.name}
+              </span>
+              <UnlinkButton linkId={l.id} />
+            </div>
+          ))}
+          {links.length === 0 && <p className="text-sm text-foreground/50">لا توجد روابط بعد</p>}
+        </div>
       </section>
 
       <section className="space-y-4">

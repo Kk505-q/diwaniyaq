@@ -35,9 +35,15 @@ export function AssignRoleForm({ userId, currentRole }: { userId: string; curren
         className="rounded-lg border border-border px-3 py-1.5 text-sm"
       >
         <option value="STUDENT">طالب</option>
+        <option value="PARENT">ولي أمر</option>
         <option value="SUPERVISOR">مشرف</option>
         <option value="ADMIN">إدارة</option>
       </select>
+      {role === "PARENT" && (
+        <span className="text-xs text-foreground/50">
+          اربط الطلاب من قسم «ربط أولياء الأمور بالطلاب»
+        </span>
+      )}
       <SubmitButton />
     </form>
   );
