@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { canSendTo, ALL_STUDENTS } from "@/lib/messages";
 import { ROLE_LABELS } from "@/lib/roles";
-import { publicName } from "@/lib/display";
+import { aliasOnly } from "@/lib/display";
 
 export type MessageActionState = { error?: string; ok?: boolean };
 
@@ -75,7 +75,7 @@ export async function getInbox(): Promise<InboxItem[]> {
     id: m.id,
     senderId: m.senderId,
     // Students always appear by their alias (never the real name).
-    senderName: m.sender.role === "STUDENT" ? publicName(m.sender) : m.sender.name,
+    senderName: m.sender.role === "STUDENT" ? aliasOnly(m.sender) : m.sender.name,
     senderRoleLabel: ROLE_LABELS[m.sender.role] ?? m.sender.role,
     body: m.body,
     createdAt: m.createdAt.toISOString(),

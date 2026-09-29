@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { ROLE_LABELS } from "@/lib/roles";
-import { publicName } from "@/lib/display";
+import { aliasOnly } from "@/lib/display";
 import type { Role } from "@prisma/client";
 
 export type Recipient = { id: string; name: string; roleLabel: string };
@@ -24,7 +24,7 @@ export async function allowedRecipients(userId: string, role: Role): Promise<Rec
     });
     return [
       ...sups.map((s) => ({ id: s.id, name: s.name, roleLabel: ROLE_LABELS.SUPERVISOR })),
-      ...peers.map((p) => ({ id: p.id, name: publicName(p), roleLabel: ROLE_LABELS.STUDENT })),
+      ...peers.map((p) => ({ id: p.id, name: aliasOnly(p), roleLabel: ROLE_LABELS.STUDENT })),
     ];
   }
 
