@@ -2,7 +2,6 @@ import { requireRole } from "@/lib/guard";
 import { prisma } from "@/lib/db";
 import { periodKeyFor } from "@/lib/dates";
 import { TaskCompleteForm } from "@/components/student/TaskCompleteForm";
-import { SubscriptionBadge } from "@/components/SubscriptionBadge";
 import { WelcomeCard } from "@/components/WelcomeCard";
 import { randomPhrase } from "@/lib/phrases";
 import { FREQ_LABEL } from "@/lib/labels";
@@ -28,7 +27,6 @@ export default async function StudentTasksPage() {
   return (
     <div className="space-y-4">
       <WelcomeCard name={user.name} percent={percent} remaining={remaining} total={total} phrase={phrase} />
-      <SubscriptionBadge status={user.subscription} />
       <h2 className="text-lg font-bold">المهام غير المنجزة</h2>
       {unfinished.length === 0 && (
         <div className="rounded-xl border border-border bg-surface p-8 text-center text-foreground/60">

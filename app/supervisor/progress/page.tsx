@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 import { periodKeyFor } from "@/lib/dates";
 import { weeklyCompletion } from "@/lib/completion";
 import { CompletionBadge } from "@/components/CompletionBadge";
-import { SubscriptionSelect } from "@/components/SubscriptionSelect";
 import { StudentNameManager } from "@/components/admin/StudentNameManager";
 import { DeleteStudentButton } from "@/components/supervisor/DeleteStudentButton";
 import { flushDuePoints } from "@/lib/points";
@@ -51,7 +50,6 @@ export default async function SupervisorProgressPage() {
               <th className="px-4 py-3 text-right font-medium">الإنجاز الأسبوعي</th>
               <th className="px-4 py-3 text-right font-medium">قيد المراجعة</th>
               <th className="px-4 py-3 text-right font-medium">النقاط</th>
-              <th className="px-4 py-3 text-right font-medium">الاشتراك</th>
               <th className="px-4 py-3 text-right font-medium" />
             </tr>
           </thead>
@@ -84,9 +82,6 @@ export default async function SupervisorProgressPage() {
                 </td>
                 <td className="px-4 py-3 font-bold text-brand">{s.points}</td>
                 <td className="px-4 py-3">
-                  <SubscriptionSelect studentId={s.id} value={s.subscription} />
-                </td>
-                <td className="px-4 py-3">
                   <div className="flex flex-col items-start gap-2">
                     <Link href={`/supervisor/students/${s.id}`} className="text-sm text-brand hover:underline">
                       التفاصيل
@@ -98,7 +93,7 @@ export default async function SupervisorProgressPage() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-foreground/50">
+                <td colSpan={6} className="px-4 py-8 text-center text-foreground/50">
                   لا يوجد طلاب بعد
                 </td>
               </tr>

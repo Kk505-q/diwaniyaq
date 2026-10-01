@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { Avatar } from "@/components/Avatar";
-import { SubscriptionBadge } from "@/components/SubscriptionBadge";
 import {
   updateProfileAction,
   updateAvatarAction,
@@ -49,7 +48,6 @@ export function AccountView({
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-bold">حسابي</h2>
-      {user.role === "STUDENT" && <SubscriptionBadge status={user.subscription} />}
       <AvatarSection user={user} hasAvatar={hasAvatar} />
       <ProfileSection user={user} canEditName={canEditName} canEditAlias={canEditAlias} />
       <PasswordSection />
